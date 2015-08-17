@@ -1,0 +1,9 @@
+C:\Users\Kyle\Documents\Pedal Switcher\Pedal Switcher\bin\Release\Pedal Switcher.exe.config
+C:\Users\Kyle\Documents\Pedal Switcher\Pedal Switcher\bin\Release\Pedal Switcher.exe
+C:\Users\Kyle\Documents\Pedal Switcher\Pedal Switcher\bin\Release\Pedal Switcher.pdb
+C:\Users\Kyle\Documents\Pedal Switcher\Pedal Switcher\obj\Release\Pedal_Switcher.Form1.resources
+C:\Users\Kyle\Documents\Pedal Switcher\Pedal Switcher\obj\Release\Pedal_Switcher.Form2.resources
+C:\Users\Kyle\Documents\Pedal Switcher\Pedal Switcher\obj\Release\Pedal_Switcher.Properties.Resources.resources
+C:\Users\Kyle\Documents\Pedal Switcher\Pedal Switcher\obj\Release\Pedal Switcher.csproj.GenerateResource.Cache
+C:\Users\Kyle\Documents\Pedal Switcher\Pedal Switcher\obj\Release\Pedal Switcher.exe
+C:\Users\Kyle\Documents\Pedal Switcher\Pedal Switcher\obj\Release\Pedal Switcher.pdb

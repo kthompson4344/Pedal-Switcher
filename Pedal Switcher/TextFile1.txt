@@ -1,0 +1,13 @@
+TODO:
+Creating Presets:
+	Click pedal to send to setting bar
+	Create format to save settings
+	Change number to switch to a different preset (0-99)
+
+Serial:
+	Transfer saves preset from switcher when you press receive
+	Transfer newly created presets to switcher when you press send (overwrite all 99 or write only what has changed)
+
+File Stuff:
+	Import and Save pedalboards with different pictures (save a folder with a file and images)
+	
