@@ -104,6 +104,7 @@
             this.pedalBoardHolder.Name = "pedalBoardHolder";
             this.pedalBoardHolder.Size = new System.Drawing.Size(1083, 128);
             this.pedalBoardHolder.TabIndex = 8;
+            this.pedalBoardHolder.Click += new System.EventHandler(this.pedalBoardHolder_Click);
             // 
             // pedalConfigHolder
             // 
@@ -129,7 +130,7 @@
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.Presets)).EndInit();
             this.ResumeLayout(false);
-
+            
         }
 
         #endregion

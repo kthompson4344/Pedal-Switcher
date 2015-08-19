@@ -21,10 +21,9 @@ namespace Pedal_Switcher
         public Form1()
         {
             InitializeComponent();
-
             pedalBoard = new PedalList(pedalBoardHolder);
             pedalConfig = new PedalList(pedalConfigHolder);
-            pedalBoard.addPanel(); 
+            pedalBoard.addPanel();
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -44,16 +43,32 @@ namespace Pedal_Switcher
 
         private void Import_Click(object sender, EventArgs e)
         {
-
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "TXT Files|*.txt";
+            openFileDialog1.Title = "Select a Pedalboard";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                // Read each line of the file into a string array. Each element 
+                // of the array is one line of the file. 
+                string[] lines = System.IO.File.ReadAllLines(openFileDialog1.FileName);
+                
+                foreach (string line in lines)
+                {
+                    if (line != "")
+                    {
+                        pedalBoard.addPanel(line);
+                    }
+                }
+            }
         }
 
         private void Save_Click(object sender, EventArgs e)
         {
             string[] paths;
             paths = new string[14]; //Image File Paths
-            for (int i = 0; i <= pedalBoard.getNumPedals(); i++)
+            for (int i = 0; i < pedalBoard.getNumPedals(); i++)
             {
-                paths[i] = pedalBoard.pedalInfos().ElementAt(i).ElementAt(1);
+                paths[i] = pedalBoard.pedalInfos().ElementAt(i+1).ElementAt(1);
             }
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.Filter = "Text file (*.txt)|*.txt|All files (*.*)|*.*";
@@ -75,6 +90,17 @@ namespace Pedal_Switcher
         {
 
         }
+
+        private void pedalBoardHolder_Click(object sender, EventArgs e)
+        {
+      
+        }
+
+        void addButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
     }
 
     public class PedalList
@@ -87,9 +113,10 @@ namespace Pedal_Switcher
             pedalList = new List<Pedal>();
             panelHolder = holder;
             panelHolder.BorderStyle = BorderStyle.FixedSingle;
+         
         }
 
-        public void addPanel()
+        public void addPanel(string path = "none")
         {
             //http://stackoverflow.com/questions/15385921/add-label-to-panel-programmatically
 
@@ -98,7 +125,8 @@ namespace Pedal_Switcher
             {
                 string imagePath;
                 Pedal pedal = new Pedal();
-
+                
+                pedal.Name = numPanels.ToString();
                 // TODO: You may not want this functionality for the pedalConfig, so you'll have to rearragne some stuff
                 if (numPanels == 0)
                 {
@@ -107,21 +135,30 @@ namespace Pedal_Switcher
                 }
                 if (numPanels != 0)
                 {
-                    OpenFileDialog openFileDialog1 = new OpenFileDialog();
-                    openFileDialog1.Filter = "JPG Files|*.jpg";
-                    openFileDialog1.Title = "Select a Pedal Image";
-                    if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                    if (path == "none")
                     {
-                        imagePath = openFileDialog1.FileName;
+                        OpenFileDialog openFileDialog1 = new OpenFileDialog();
+                        openFileDialog1.Filter = "JPG Files|*.jpg";
+                        openFileDialog1.Title = "Select a Pedal Image";
+                        if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                        {
+                            imagePath = openFileDialog1.FileName;
+                            pedal.setImage(imagePath);
+                        }
+                    }
+                    else
+                    {
+                        imagePath = path;
                         pedal.setImage(imagePath);
                     }
-                    //pedal.setImage(@"c:\Users\Kyle\Desktop\pedal.jpg"); // TODO: Open a dialog and select image
+                  
                 }
                 pedalList.Add(pedal);
                 panelHolder.Controls.Add(pedal);
                 if (numPanels > 0) {
                     panelHolder.Controls.SetChildIndex(pedal, numPanels - 1);
                 }
+                
             }
 
  
@@ -153,15 +190,21 @@ namespace Pedal_Switcher
         int panelWidth = 70;
         int panelHeight = 120;
         TextBox textBox;
+        Button addButton;
         string backgroundImagePath;
 
         public Pedal()
         {
             this.AllowDrop = true;
-
             this.Size = new Size(panelWidth, panelHeight);
             textBox = new TextBox();
             this.Controls.Add(textBox);
+            addButton = new Button();
+            addButton.Text = "Add";
+            //addButton.Name = 
+            addButton.Location = new Point(-2, 98);
+            addButton.Click += new EventHandler(addButton_Click);
+            this.Controls.Add(addButton);
             this.Visible = true;
             this.BringToFront();
             this.Show();
@@ -187,6 +230,12 @@ namespace Pedal_Switcher
             info.Add(textBox.Text); // 0
             info.Add(backgroundImagePath); // 1
             return info;
+        }
+
+        //click handler for added button. 
+        void addButton_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 

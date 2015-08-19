@@ -31,3 +31,10 @@ C:\Users\Kyle\Documents\Pedal Switcher\Pedal Switcher\obj\Debug\Pedal_Switcher.F
 C:\Users\Kyle\Documents\GitHub\Pedal-Switcher\Pedal Switcher\Pedal Switcher\bin\Debug\Pedal Switcher.exe.config
 C:\Users\Kyle\Documents\GitHub\Pedal-Switcher\Pedal Switcher\Pedal Switcher\obj\Debug\Pedal Switcher.exe
 C:\Users\Kyle\Documents\GitHub\Pedal-Switcher\Pedal Switcher\Pedal Switcher\obj\Debug\Pedal Switcher.pdb
+C:\Users\Kyle\Documents\GitHub\Pedal-Switcher\Pedal Switcher\Pedal Switcher\obj\Debug\Pedal Switcher.csprojResolveAssemblyReference.cache
+C:\Users\Kyle\Documents\GitHub\Pedal-Switcher\Pedal Switcher\Pedal Switcher\obj\Debug\Pedal_Switcher.Form1.resources
+C:\Users\Kyle\Documents\GitHub\Pedal-Switcher\Pedal Switcher\Pedal Switcher\obj\Debug\Pedal_Switcher.Form2.resources
+C:\Users\Kyle\Documents\GitHub\Pedal-Switcher\Pedal Switcher\Pedal Switcher\obj\Debug\Pedal_Switcher.Properties.Resources.resources
+C:\Users\Kyle\Documents\GitHub\Pedal-Switcher\Pedal Switcher\Pedal Switcher\obj\Debug\Pedal Switcher.csproj.GenerateResource.Cache
+C:\Users\Kyle\Documents\GitHub\Pedal-Switcher\Pedal Switcher\Pedal Switcher\bin\Debug\Pedal Switcher.exe
+C:\Users\Kyle\Documents\GitHub\Pedal-Switcher\Pedal Switcher\Pedal Switcher\bin\Debug\Pedal Switcher.pdb
