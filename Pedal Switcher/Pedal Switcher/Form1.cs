@@ -14,32 +14,34 @@ namespace Pedal_Switcher
     
     public partial class Form1 : Form
     {
-        PedalList pedalBoard;
-        PedalList pedalConfig;
+        PedalList pedalBoard;  //Top tray which contains available pedals on pedalboard
+        PedalList pedalConfig; //Bottom tray which contains saved presets
         static System.Windows.Forms.Timer myTimer = new System.Windows.Forms.Timer();
-        int[] currentConfig;
-        int currentIndex = 0;
+        int[] currentConfig; //array for current preset
+        int currentIndex = 0; //index of above array
+        int[] savedConfigs; //array for all presets
 
         public Form1()
         {
             InitializeComponent();
             pedalBoard = new PedalList(pedalBoardHolder);
             pedalConfig = new PedalList(pedalConfigHolder);
-            pedalBoard.addPanel("none", true);
+
+            pedalBoard.addPanel("none", true); //add built in buffer to begin with
+
+            //configuring a timer for 1ms
             myTimer.Tick += new EventHandler(TimerEventProcessor);
             myTimer.Interval = 1;
             myTimer.Start();
-            Application.DoEvents();
-            currentConfig = new int[10];
-            
+
+            Application.DoEvents(); //start timer
+
+            currentConfig = new int[10]; //array for current preset
+            savedConfigs = new int[100]; //array for all presets
             
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
+        //This 1ms timer checks to see if a button to add a pedal from the pedalboard to a preset is clicked
         private void TimerEventProcessor(Object myObject, EventArgs myEventArgs)
         {
             if (pedalBoard.getAddingPedal() == false)
@@ -50,7 +52,7 @@ namespace Pedal_Switcher
                     int number = Int32.Parse(pedalBoard.pedalInfos().ElementAt(i).ElementAt(2));
                     if (clicked == number)
                     {
-                        bool alreadyUsed = false;
+                        bool alreadyUsed = false;   //used to see if a pedal is added as it cannot be used twice
                         for (int j = 0; j < currentIndex; j++)
                         {
                             if (currentConfig[j] == number)
@@ -58,15 +60,17 @@ namespace Pedal_Switcher
                                 alreadyUsed = true;
                             }
                         }
+
+                        //ignores clicks on pedals that are already added
                         if (alreadyUsed == false)
                         {
-                            if (number == 1)
+                            if (number == 1) //buffer
                             {
-                                pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(0).ElementAt(1),true);
+                                pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(0).ElementAt(1),true,false);
                             }
                             else
                             {
-                                pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(i).ElementAt(1));
+                                pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(i).ElementAt(1),false,false);
                             }
                             currentConfig[currentIndex] = number;
                             currentIndex++;
@@ -82,6 +86,7 @@ namespace Pedal_Switcher
             pedalBoard.addPanel();   
         }
 
+        //opens file dialog and loads pedalboard from that file
         private void Import_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -103,6 +108,7 @@ namespace Pedal_Switcher
             }
         }
 
+        //Opens a file dialog and saves pedalboard to that location
         private void Save_Click(object sender, EventArgs e)
         {
             string[] paths;
@@ -122,62 +128,17 @@ namespace Pedal_Switcher
             // string pedal12Label = pedal12Info.ElementAt(0);
         }
 
+        //receives serial data of presets on the switcher - TODO
         private void Receive_Click(object sender, EventArgs e)
         {
 
         }
 
+        //sends serial data of the presets to the switcher - TODO
         private void Send_Click(object sender, EventArgs e)
         {
 
-        }
-
-        private void pedalBoardHolder_Click(object sender, EventArgs e)
-        {
-            //var panel = sender as Panel;
-            //if (panel != null)
-            //{
-            //    Console.WriteLine("HEY");
-            //}
-        }
-
-        void Form1_Click(object sender, EventArgs e)
-        {
-            //var panel = sender as Button;
-            //if (panel != null)
-            //{
-            //    Console.WriteLine("HEY");
-            //}
-        }
-
-        //private void MouseDown(object sender, MouseEventArgs e)
-        //{
-        //    //var thing = sender as Button;
-        //    //if (thing != null)
-        //    //{
-        //        //Console.WriteLine("Hey");
-        //    //}
-            
-        //}
-
-        //click handler for added button. 
-        public void addButton_Click(object sender, EventArgs e)
-        {
-            // for (int i = 0; i < pedalBoard.getNumPedals(); i++)
-            // {
-            //if (pedalBoard.pedalInfos().ElementAt(pedalBoard.getNumPedals()).ElementAt(2) == "0")
-            //{
-            //    Console.WriteLine("Hey");
-            //}
-            //}
-            
-
-            //Console.WriteLine("Hey");          
-        }
-
-        
-
-        
+        }     
     }
 
     public class PedalList
@@ -194,7 +155,8 @@ namespace Pedal_Switcher
          
         }
 
-        public void addPanel(string path = "none", bool buffer = false)
+        //adds a pedal
+        public void addPanel(string path = "none", bool buffer = false, bool button = true)
         {
             //http://stackoverflow.com/questions/15385921/add-label-to-panel-programmatically
             addingPedal = true;
@@ -202,10 +164,13 @@ namespace Pedal_Switcher
             if (numPanels < 14)
             {
                 string imagePath;
-                Pedal pedal = new Pedal();
+
+            
+                Pedal pedal = new Pedal(button);
+                
                 
                 pedal.Name = numPanels.ToString();
-                // TODO: You may not want this functionality for the pedalConfig, so you'll have to rearragne some stuff
+                // TODO: May not want this functionality for the pedalConfig, so you'll have to rearragne some stuff
                 if (buffer == true)
                 {
                     pedal.setLabel("buffer");
@@ -234,9 +199,8 @@ namespace Pedal_Switcher
                 pedalList.Add(pedal);
             
                 panelHolder.Controls.Add(pedal);
-                //if (numPanels > 0) {
-                    panelHolder.Controls.SetChildIndex(pedal, numPanels);
-                //}
+
+                panelHolder.Controls.SetChildIndex(pedal, numPanels);
                 
 
             }
@@ -249,14 +213,11 @@ namespace Pedal_Switcher
             return numPanels;
         }
 
+        //used to prevent crashing when a file dialog is open
         public bool getAddingPedal()
         {
             return addingPedal;
         }
-
-        // So somewhere else...
-        // List<string> pedal12Info = pedalInfos().ElementAt(11);
-        // string pedal12Label = pedal12Info.ElementAt(0);
 
         public List<List<string>> pedalInfos()
         {
@@ -283,19 +244,22 @@ namespace Pedal_Switcher
         static int numPedals = 0;
         static int clicked = 14;
 
-        public Pedal()
+        public Pedal(bool button = true)
         {
             numPedals++;
             this.AllowDrop = true;
             this.Size = new Size(panelWidth, panelHeight);
             textBox = new TextBox();
             this.Controls.Add(textBox);
-            addButton = new Button();
-            addButton.Text = "Add";
-            addButton.Name = numPedals.ToString();
-            addButton.Location = new Point(-2, 98);
-            addButton.Click += new EventHandler(addButton_Click);
-            this.Controls.Add(addButton);
+            if (button == true)
+            {
+                addButton = new Button();
+                addButton.Text = "Add";
+                addButton.Name = numPedals.ToString();
+                addButton.Location = new Point(-2, 98);
+                addButton.Click += new EventHandler(addButton_Click);
+                this.Controls.Add(addButton);
+            }
             this.Visible = true;
             this.BringToFront();
             this.Show();
@@ -335,12 +299,14 @@ namespace Pedal_Switcher
             }
             else
             {
+                //14 signifies that no pedal is clicked (TODO - this may need to be 0 or 15)
                 info.Add("14");
                 
             }
             return info;
         }
 
+        //click handler for button on each pedal in pedalboard
         public void addButton_Click(object sender, EventArgs e)
         {
             clicked = Int32.Parse(addButton.Name);
