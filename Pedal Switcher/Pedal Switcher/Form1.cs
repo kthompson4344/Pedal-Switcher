@@ -11,19 +11,28 @@ using System.Windows.Forms;
 
 namespace Pedal_Switcher
 {
-
+    
     public partial class Form1 : Form
     {
-
         PedalList pedalBoard;
         PedalList pedalConfig;
-        
+        static System.Windows.Forms.Timer myTimer = new System.Windows.Forms.Timer();
+        int[] currentConfig;
+        int currentIndex = 0;
+
         public Form1()
         {
             InitializeComponent();
             pedalBoard = new PedalList(pedalBoardHolder);
             pedalConfig = new PedalList(pedalConfigHolder);
-            pedalBoard.addPanel();
+            pedalBoard.addPanel("none", true);
+            myTimer.Tick += new EventHandler(TimerEventProcessor);
+            myTimer.Interval = 1;
+            myTimer.Start();
+            Application.DoEvents();
+            currentConfig = new int[10];
+            
+            
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -31,14 +40,46 @@ namespace Pedal_Switcher
 
         }
 
+        private void TimerEventProcessor(Object myObject, EventArgs myEventArgs)
+        {
+            if (pedalBoard.getAddingPedal() == false)
+            {
+                for (int i = 0; i <= pedalBoard.getNumPedals(); i++)
+                {
+                    int clicked = Int32.Parse(pedalBoard.pedalInfos().ElementAt(i).ElementAt(3));
+                    int number = Int32.Parse(pedalBoard.pedalInfos().ElementAt(i).ElementAt(2));
+                    if (clicked == number)
+                    {
+                        bool alreadyUsed = false;
+                        for (int j = 0; j < currentIndex; j++)
+                        {
+                            if (currentConfig[j] == number)
+                            {
+                                alreadyUsed = true;
+                            }
+                        }
+                        if (alreadyUsed == false)
+                        {
+                            if (number == 1)
+                            {
+                                pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(0).ElementAt(1),true);
+                            }
+                            else
+                            {
+                                pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(i).ElementAt(1));
+                            }
+                            currentConfig[currentIndex] = number;
+                            currentIndex++;
+                        }
+                    }
+                }
+            }
+
+        }
+
         private void AddPedal_Click(object sender, EventArgs e)
         {     
             pedalBoard.addPanel();   
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-            
         }
 
         private void Import_Click(object sender, EventArgs e)
@@ -93,14 +134,50 @@ namespace Pedal_Switcher
 
         private void pedalBoardHolder_Click(object sender, EventArgs e)
         {
-      
+            //var panel = sender as Panel;
+            //if (panel != null)
+            //{
+            //    Console.WriteLine("HEY");
+            //}
         }
 
-        void addButton_Click(object sender, EventArgs e)
+        void Form1_Click(object sender, EventArgs e)
         {
-
+            //var panel = sender as Button;
+            //if (panel != null)
+            //{
+            //    Console.WriteLine("HEY");
+            //}
         }
 
+        //private void MouseDown(object sender, MouseEventArgs e)
+        //{
+        //    //var thing = sender as Button;
+        //    //if (thing != null)
+        //    //{
+        //        //Console.WriteLine("Hey");
+        //    //}
+            
+        //}
+
+        //click handler for added button. 
+        public void addButton_Click(object sender, EventArgs e)
+        {
+            // for (int i = 0; i < pedalBoard.getNumPedals(); i++)
+            // {
+            //if (pedalBoard.pedalInfos().ElementAt(pedalBoard.getNumPedals()).ElementAt(2) == "0")
+            //{
+            //    Console.WriteLine("Hey");
+            //}
+            //}
+            
+
+            //Console.WriteLine("Hey");          
+        }
+
+        
+
+        
     }
 
     public class PedalList
@@ -108,6 +185,7 @@ namespace Pedal_Switcher
         int numPanels = 0;
         List<Pedal> pedalList;
         Panel panelHolder;
+        bool addingPedal = false;
         public PedalList(Panel holder)
         {
             pedalList = new List<Pedal>();
@@ -116,10 +194,10 @@ namespace Pedal_Switcher
          
         }
 
-        public void addPanel(string path = "none")
+        public void addPanel(string path = "none", bool buffer = false)
         {
             //http://stackoverflow.com/questions/15385921/add-label-to-panel-programmatically
-
+            addingPedal = true;
             numPanels = pedalList.Count;
             if (numPanels < 14)
             {
@@ -128,12 +206,12 @@ namespace Pedal_Switcher
                 
                 pedal.Name = numPanels.ToString();
                 // TODO: You may not want this functionality for the pedalConfig, so you'll have to rearragne some stuff
-                if (numPanels == 0)
+                if (buffer == true)
                 {
                     pedal.setLabel("buffer");
                     pedal.setImage(@"c:\Users\Kyle\Desktop\pedal.jpg");
                 }
-                if (numPanels != 0)
+                if (buffer != true)
                 {
                     if (path == "none")
                     {
@@ -149,24 +227,31 @@ namespace Pedal_Switcher
                     else
                     {
                         imagePath = path;
-                        pedal.setImage(imagePath);
+                        pedal.setImage(imagePath);       
                     }
                   
                 }
                 pedalList.Add(pedal);
+            
                 panelHolder.Controls.Add(pedal);
-                if (numPanels > 0) {
-                    panelHolder.Controls.SetChildIndex(pedal, numPanels - 1);
-                }
+                //if (numPanels > 0) {
+                    panelHolder.Controls.SetChildIndex(pedal, numPanels);
+                //}
                 
-            }
 
+            }
+            addingPedal = false;
  
         }
 
         public int getNumPedals()
         {
             return numPanels;
+        }
+
+        public bool getAddingPedal()
+        {
+            return addingPedal;
         }
 
         // So somewhere else...
@@ -179,9 +264,12 @@ namespace Pedal_Switcher
             foreach (Pedal p in pedalList)
             {
                 infos.Add(p.getInfo());
+                
             }
             return infos;
         }
+
+
     }
 
     public class Pedal : Panel
@@ -192,22 +280,32 @@ namespace Pedal_Switcher
         TextBox textBox;
         Button addButton;
         string backgroundImagePath;
+        static int numPedals = 0;
+        static int clicked = 14;
 
         public Pedal()
         {
+            numPedals++;
             this.AllowDrop = true;
             this.Size = new Size(panelWidth, panelHeight);
             textBox = new TextBox();
             this.Controls.Add(textBox);
             addButton = new Button();
             addButton.Text = "Add";
-            //addButton.Name = 
+            addButton.Name = numPedals.ToString();
             addButton.Location = new Point(-2, 98);
             addButton.Click += new EventHandler(addButton_Click);
             this.Controls.Add(addButton);
             this.Visible = true;
             this.BringToFront();
             this.Show();
+            this.BringToFront();
+        }
+
+        //http://stackoverflow.com/questions/12276641/count-instances-of-the-class
+        ~Pedal()
+        {
+            numPedals--;
         }
 
         public void setLabel(string text)
@@ -222,21 +320,39 @@ namespace Pedal_Switcher
             this.BackgroundImageLayout = ImageLayout.Zoom;
         }
 
-        
         public List<string> getInfo()
         {
             // Put more stuff here...
             List<string> info = new List<string>();
             info.Add(textBox.Text); // 0
             info.Add(backgroundImagePath); // 1
+            info.Add(addButton.Name); // 2
+            
+            if (addButton.Name == clicked.ToString())
+            {
+                info.Add(clicked.ToString()); // 3
+                
+            }
+            else
+            {
+                info.Add("14");
+                
+            }
             return info;
         }
 
-        //click handler for added button. 
-        void addButton_Click(object sender, EventArgs e)
+        public void addButton_Click(object sender, EventArgs e)
         {
-            
+            clicked = Int32.Parse(addButton.Name);
         }
+
+        public int getButtonClick()
+        {
+            return clicked;
+        }
+
+        
+
     }
 
 }
