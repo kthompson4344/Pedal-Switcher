@@ -77,6 +77,7 @@
             this.Presets.Name = "Presets";
             this.Presets.Size = new System.Drawing.Size(85, 20);
             this.Presets.TabIndex = 5;
+            this.Presets.ValueChanged += new System.EventHandler(this.Presets_ValueChanged);
             // 
             // Receive
             // 
@@ -129,7 +130,7 @@
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.Presets)).EndInit();
             this.ResumeLayout(false);
-            
+
         }
 
         #endregion
