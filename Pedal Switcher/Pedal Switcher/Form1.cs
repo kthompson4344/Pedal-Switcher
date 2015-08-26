@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace Pedal_Switcher
 {
-    
+
     public partial class Form1 : Form
     {
         PedalList pedalBoard;  //Top tray which contains available pedals on pedalboard
@@ -33,68 +33,53 @@ namespace Pedal_Switcher
 
             pedalBoard.addPanel("none", true); //add built in buffer to begin with
 
-            //configuring a timer for 1ms
-            myTimer.Tick += new EventHandler(TimerEventProcessor);
-            myTimer.Interval = 1;
-            myTimer.Start();
-
-            Application.DoEvents(); //start timer
-
             currentConfig = new int[14]; //array for current preset
-            savedConfigs = new int[100,14]; //array for all presets
-            currentPreset = 0;          
+            savedConfigs = new int[100, 14]; //array for all presets
+            currentPreset = 0;
         }
 
         public void mutateString(string str)
         {
             _myStringValue = str;
-            //Console.WriteLine(_myStringValue);
-            
-        }
+            for (int i = 0; i <= pedalBoard.getNumPedals(); i++)
+            {
+                int clicked = Int32.Parse(_myStringValue);
+                int number = Int32.Parse(pedalBoard.pedalInfos().ElementAt(i).ElementAt(2));
+                if (clicked == number)
+                {
+                    bool alreadyused = false;   //used to see if a pedal is added as it cannot be used twice
+                    for (int j = 0; j < currentIndex; j++)
+                    {
+                        if (currentConfig[j] == number)
+                        {
+                            alreadyused = true;
+                        }
+                    }
 
-        //This 1ms timer checks to see if a button to add a pedal from the pedalboard to a preset is clicked
-        private void TimerEventProcessor(Object myObject, EventArgs myEventArgs)
-        {
-            //if (pedalBoard.getAddingPedal() == false)
-            //{
-            //    for (int i = 0; i <= pedalBoard.getNumPedals(); i++)
-            //    {
-            //        int clicked = Int32.Parse(pedalBoard.pedalInfos().ElementAt(i).ElementAt(3));
-            //        int number = Int32.Parse(pedalBoard.pedalInfos().ElementAt(i).ElementAt(2));
-            //        if (clicked == number)
-            //        {
-            //            bool alreadyUsed = false;   //used to see if a pedal is added as it cannot be used twice
-            //            for (int j = 0; j < currentIndex; j++)
-            //            {
-            //                if (currentConfig[j] == number)
-            //                {
-            //                    alreadyUsed = true;
-            //                }
-            //            }
+                    //ignores clicks on pedals that are already added
+                    if (alreadyused == false)
+                    {
+                        if (number == 1) //buffer
+                        {
+                            pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(0).ElementAt(1), true, false);
+                        }
+                        else
+                        {
+                            pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(i).ElementAt(1), false, false);
+                        }
+                        currentConfig[currentIndex] = number;
+                        currentIndex++;
+                    }
+                }
+            }
 
-            //            //ignores clicks on pedals that are already added
-            //            if (alreadyUsed == false)
-            //            {
-            //                if (number == 1) //buffer
-            //                {
-            //                    pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(0).ElementAt(1),true,false);
-            //                }
-            //                else
-            //                {
-            //                    pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(i).ElementAt(1),false,false);
-            //                }
-            //                currentConfig[currentIndex] = number;
-            //                currentIndex++;
-            //            }
-            //        }
-            //    }
-            //}
 
         }
+
 
         private void AddPedal_Click(object sender, EventArgs e)
-        {     
-            pedalBoard.addPanel();   
+        {
+            pedalBoard.addPanel();
         }
 
         //opens file dialog and loads pedalboard from that file
@@ -109,7 +94,7 @@ namespace Pedal_Switcher
                 // Read each line of the file into a string array. Each element 
                 // of the array is one line of the file. 
                 string[] lines = System.IO.File.ReadAllLines(openFileDialog1.FileName);
-                
+
                 foreach (string line in lines)
                 {
                     if (line != "")
@@ -155,38 +140,33 @@ namespace Pedal_Switcher
         private void Presets_ValueChanged(object sender, EventArgs e)
         {
             int numPedals = 0;
+            currentIndex = 0;
             pedalConfig.removePanels();
             for (int i = 0; i < 14; i++)
             {
-                savedConfigs[currentPreset,i] = currentConfig[i];
-                if (savedConfigs[(int)Presets.Value,i] > 0)
+                savedConfigs[currentPreset, i] = currentConfig[i];
+                if (savedConfigs[(int)Presets.Value, i] > 0)
                 {
                     numPedals++;
                 }
+                //Console.WriteLine(currentConfig[i]);
+                //Console.WriteLine(savedConfigs[(int)Presets.Value, i]);
             }
             currentPreset = (int)Presets.Value;
-            //bool alreadyUsed = false;   //used to see if a pedal is added as it cannot be used twice
             
+            //Console.WriteLine(currentPreset);
+            //bool alreadyUsed = false;   //used to see if a pedal is added as it cannot be used twice
             if (numPedals > 0)
             {
                 for (int i = 0; i < numPedals; i++)
                 {
-                    //Console.WriteLine(pedalConfig.pedalInfos(false).ElementAt(savedConfigs[currentPreset, i]-1).ElementAt(1));
-                    pedalConfig.addPanel(pedalConfig.pedalInfos(false).ElementAt(savedConfigs[currentPreset, i]-1).ElementAt(1), false, false);
+                    pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(savedConfigs[currentPreset, i] - 1).ElementAt(1), false, false);
                 }
             }
-            
-
-            //if (number == 1) //buffer
-            //{
-            //    pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(0).ElementAt(1), true, false);
-            //}
-            //else
-            //{
-            //    pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(i).ElementAt(1), false, false);
-            //}
-            //currentConfig[currentIndex] = number;
-            //currentIndex++;
+            for (int i = 0; i < 14; i++)
+            {
+                currentConfig[i] = savedConfigs[currentPreset, i];
+            }
         }
     }
 
@@ -210,21 +190,21 @@ namespace Pedal_Switcher
             pedalList = new List<Pedal>();
             panelHolder = holder;
             panelHolder.BorderStyle = BorderStyle.FixedSingle;
-         
+
         }
 
         //adds a pedal
         public void addPanel(string path = "none", bool buffer = false, bool button = true)
         {
-            
+
             //http://stackoverflow.com/questions/15385921/add-label-to-panel-programmatically
             addingPedal = true;
             numPanels = pedalList.Count;
             if (numPanels < 14)
             {
-                string imagePath;      
-                     
-                Pedal pedal = new Pedal(_form1, numPanels, button);           
+                string imagePath;
+
+                Pedal pedal = new Pedal(_form1, numPanels, button);
                 pedal.Name = numPanels.ToString();
                 // TODO: May not want this functionality for the pedalConfig, so you'll have to rearragne some stuff
                 if (buffer == true)
@@ -248,20 +228,20 @@ namespace Pedal_Switcher
                     else
                     {
                         imagePath = path;
-                        pedal.setImage(imagePath);       
+                        pedal.setImage(imagePath);
                     }
-                  
+
                 }
                 pedalList.Add(pedal);
-            
+
                 panelHolder.Controls.Add(pedal);
 
                 panelHolder.Controls.SetChildIndex(pedal, numPanels);
-                
+
 
             }
             addingPedal = false;
- 
+
         }
 
         public void removePanels()
@@ -282,12 +262,12 @@ namespace Pedal_Switcher
             return addingPedal;
         }
 
-        public List<List<string>> pedalInfos(bool includeButton = true)
+        public List<List<string>> pedalInfos()
         {
             List<List<string>> infos = new List<List<string>>();
             foreach (Pedal p in pedalList)
             {
-                infos.Add(p.getInfo(includeButton));     
+                infos.Add(p.getInfo());
             }
             return infos;
         }
@@ -311,7 +291,6 @@ namespace Pedal_Switcher
         {
             _form1 = someForm;
             numPedals++;
-            Console.WriteLine(numPedals);
             this.AllowDrop = true;
             this.Size = new Size(panelWidth, panelHeight);
             textBox = new TextBox();
@@ -388,7 +367,7 @@ namespace Pedal_Switcher
             return clicked;
         }
 
-        
+
 
     }
 
