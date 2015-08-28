@@ -22,7 +22,7 @@ namespace Pedal_Switcher
         int[,] savedConfigs; //array for all presets
         int currentPreset;
         string _myStringValue;
-
+        bool alreadyUsed = false;
 
         public Form1()
         {
@@ -36,44 +36,46 @@ namespace Pedal_Switcher
             currentConfig = new int[14]; //array for current preset
             savedConfigs = new int[100, 14]; //array for all presets
             currentPreset = 0;
+
         }
 
         public void mutateString(string str)
         {
-            _myStringValue = str;
-            for (int i = 0; i <= pedalBoard.getNumPedals(); i++)
+            if (alreadyUsed == false)
             {
-                int clicked = Int32.Parse(_myStringValue);
-                int number = Int32.Parse(pedalBoard.pedalInfos().ElementAt(i).ElementAt(2));
-                if (clicked == number)
+                _myStringValue = str;
+                for (int i = 0; i <= pedalBoard.getNumPedals(); i++)
                 {
-                    bool alreadyused = false;   //used to see if a pedal is added as it cannot be used twice
-                    for (int j = 0; j < currentIndex; j++)
+                    int clicked = Int32.Parse(_myStringValue);
+                    int number = Int32.Parse(pedalBoard.pedalInfos().ElementAt(i).ElementAt(2));
+                    if (clicked == number)
                     {
-                        if (currentConfig[j] == number)
+                        alreadyUsed = false;   //used to see if a pedal is added as it cannot be used twice
+                        for (int j = 0; j < currentIndex; j++)
                         {
-                            alreadyused = true;
+                            if (currentConfig[j] == number)
+                            {
+                                alreadyUsed = true;
+                            }
                         }
-                    }
 
-                    //ignores clicks on pedals that are already added
-                    if (alreadyused == false)
-                    {
-                        if (number == 1) //buffer
+                        //ignores clicks on pedals that are already added
+                        if (alreadyUsed == false)
                         {
-                            pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(0).ElementAt(1), true, false);
+                            if (number == 1) //buffer
+                            {
+                                pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(0).ElementAt(1), true, false);
+                            }
+                            else
+                            {
+                                pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(i).ElementAt(1), false, false);
+                            }
+                            currentConfig[currentIndex] = number;
+                            currentIndex++;
                         }
-                        else
-                        {
-                            pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(i).ElementAt(1), false, false);
-                        }
-                        currentConfig[currentIndex] = number;
-                        currentIndex++;
                     }
                 }
             }
-
-
         }
 
 
@@ -103,6 +105,11 @@ namespace Pedal_Switcher
                     }
                 }
             }
+            else
+            {
+                //TODO create a dialog saying not found
+                while (true) ;
+            }
         }
 
         //Opens a file dialog and saves pedalboard to that location
@@ -120,6 +127,10 @@ namespace Pedal_Switcher
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 System.IO.File.WriteAllLines(saveFileDialog1.FileName, paths);
+            }
+            else
+            {
+                // TODO create a dialog saying something
             }
             // List<string> pedal12Info = pedalInfos().ElementAt(11);
             // string pedal12Label = pedal12Info.ElementAt(0);
@@ -153,15 +164,18 @@ namespace Pedal_Switcher
                 //Console.WriteLine(savedConfigs[(int)Presets.Value, i]);
             }
             currentPreset = (int)Presets.Value;
-            
-            //Console.WriteLine(currentPreset);
-            //bool alreadyUsed = false;   //used to see if a pedal is added as it cannot be used twice
+
             if (numPedals > 0)
             {
+                alreadyUsed = true;
                 for (int i = 0; i < numPedals; i++)
                 {
                     pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(savedConfigs[currentPreset, i] - 1).ElementAt(1), false, false);
                 }
+            }
+            else
+            {
+                alreadyUsed = false;
             }
             for (int i = 0; i < 14; i++)
             {
@@ -210,7 +224,7 @@ namespace Pedal_Switcher
                 if (buffer == true)
                 {
                     pedal.setLabel("buffer");
-                    pedal.setImage(@"c:\Users\Kyle\Desktop\pedal.jpg");
+                    pedal.setImage(@"c:\Users\Kyle\Desktop\Pedals\pedal.jpg");
                 }
                 if (buffer != true)
                 {
@@ -223,6 +237,10 @@ namespace Pedal_Switcher
                         {
                             imagePath = openFileDialog1.FileName;
                             pedal.setImage(imagePath);
+                        }
+                        else
+                        {
+                            //TODO create dialog saying something
                         }
                     }
                     else
