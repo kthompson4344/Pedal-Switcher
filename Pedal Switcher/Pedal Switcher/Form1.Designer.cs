@@ -38,6 +38,7 @@
             this.Send = new System.Windows.Forms.Button();
             this.pedalBoardHolder = new System.Windows.Forms.FlowLayoutPanel();
             this.pedalConfigHolder = new System.Windows.Forms.FlowLayoutPanel();
+            this.ampSettings = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.Presets)).BeginInit();
             this.SuspendLayout();
             // 
@@ -50,6 +51,10 @@
             this.AddPedal.Text = "Add Pedal";
             this.AddPedal.UseVisualStyleBackColor = true;
             this.AddPedal.Click += new System.EventHandler(this.AddPedal_Click);
+            // 
+            // serialPort1
+            // 
+            this.serialPort1.PortName = "COM12";
             // 
             // Import
             // 
@@ -73,7 +78,7 @@
             // 
             // Presets
             // 
-            this.Presets.Location = new System.Drawing.Point(12, 336);
+            this.Presets.Location = new System.Drawing.Point(12, 354);
             this.Presets.Name = "Presets";
             this.Presets.Size = new System.Drawing.Size(85, 20);
             this.Presets.TabIndex = 5;
@@ -81,7 +86,7 @@
             // 
             // Receive
             // 
-            this.Receive.Location = new System.Drawing.Point(12, 271);
+            this.Receive.Location = new System.Drawing.Point(12, 289);
             this.Receive.Name = "Receive";
             this.Receive.Size = new System.Drawing.Size(85, 26);
             this.Receive.TabIndex = 6;
@@ -91,7 +96,7 @@
             // 
             // Send
             // 
-            this.Send.Location = new System.Drawing.Point(12, 303);
+            this.Send.Location = new System.Drawing.Point(12, 321);
             this.Send.Name = "Send";
             this.Send.Size = new System.Drawing.Size(85, 27);
             this.Send.TabIndex = 7;
@@ -113,11 +118,24 @@
             this.pedalConfigHolder.Size = new System.Drawing.Size(1083, 131);
             this.pedalConfigHolder.TabIndex = 9;
             // 
+            // ampSettings
+            // 
+            this.ampSettings.FormattingEnabled = true;
+            this.ampSettings.Items.AddRange(new object[] {
+            "Clean",
+            "Rhythm",
+            "Lead"});
+            this.ampSettings.Location = new System.Drawing.Point(7, 262);
+            this.ampSettings.Name = "ampSettings";
+            this.ampSettings.Size = new System.Drawing.Size(103, 21);
+            this.ampSettings.TabIndex = 10;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1247, 446);
+            this.Controls.Add(this.ampSettings);
             this.Controls.Add(this.Send);
             this.Controls.Add(this.Receive);
             this.Controls.Add(this.Presets);
@@ -143,6 +161,7 @@
         private System.Windows.Forms.Button Send;
         private System.Windows.Forms.FlowLayoutPanel pedalBoardHolder;
         private System.Windows.Forms.FlowLayoutPanel pedalConfigHolder;
+        private System.Windows.Forms.ComboBox ampSettings;
     }
 }
 

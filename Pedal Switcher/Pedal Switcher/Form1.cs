@@ -27,14 +27,17 @@ namespace Pedal_Switcher
         public Form1()
         {
             InitializeComponent();
+            //serialPort1.Open();
+            //serialPort1.DataReceived += serialPort1_DataReceived;
             _myStringValue = "";
             pedalBoard = new PedalList(this, pedalBoardHolder);
             pedalConfig = new PedalList(this, pedalConfigHolder);
 
             pedalBoard.addPanel("none", true); //add built in buffer to begin with
+            pedalBoard.addPanel(@"c:\Users\Kyle\Desktop\Pedals\preamp.jpg", false); //add amp preamp to begin with
 
-            currentConfig = new int[14]; //array for current preset
-            savedConfigs = new int[100, 14]; //array for all presets
+            currentConfig = new int[15]; //array for current preset
+            savedConfigs = new int[100, 15]; //array for all presets
             currentPreset = 0;
 
         }
@@ -132,6 +135,7 @@ namespace Pedal_Switcher
             {
                 // TODO create a dialog saying something
             }
+            
             // List<string> pedal12Info = pedalInfos().ElementAt(11);
             // string pedal12Label = pedal12Info.ElementAt(0);
         }
@@ -139,13 +143,48 @@ namespace Pedal_Switcher
         //receives serial data of presets on the switcher - TODO
         private void Receive_Click(object sender, EventArgs e)
         {
-
+            //http://stackoverflow.com/questions/1375410/very-simple-c-sharp-csv-reader
         }
 
         //sends serial data of the presets to the switcher - TODO
         private void Send_Click(object sender, EventArgs e)
         {
+            //TODO: start by adding current config to saved Configs
+            int line = 0;
+            //serialPort1.WriteLine("hello");
 
+            for (line = 0; line < 100; line++)
+            {
+                for (int i = 0; i < 15; i++)
+                {
+                    serialPort1.Write(savedConfigs[line, i].ToString());
+                    if (i != 14)
+                    {
+                        serialPort1.Write(",");
+                    }
+                    
+                }
+                serialPort1.Write("\n");
+
+
+            }
+        }
+        
+        private int ampSettingsToNum(string value)
+        {
+            int number;
+            if (value == "Clean")
+            {
+                number = 1;
+            }
+            else if (value == "Rhythm") {
+                number = 2;
+            }
+            else
+            {
+                number = 3;
+            }
+            return number;
         }
 
         private void Presets_ValueChanged(object sender, EventArgs e)
@@ -153,6 +192,8 @@ namespace Pedal_Switcher
             int numPedals = 0;
             currentIndex = 0;
             pedalConfig.removePanels();
+            currentConfig[14] = ampSettingsToNum(ampSettings.Text);
+            ampSettings.Text = "";
             for (int i = 0; i < 14; i++)
             {
                 savedConfigs[currentPreset, i] = currentConfig[i];
@@ -160,18 +201,32 @@ namespace Pedal_Switcher
                 {
                     numPedals++;
                 }
-                //Console.WriteLine(currentConfig[i]);
-                //Console.WriteLine(savedConfigs[(int)Presets.Value, i]);
             }
+            savedConfigs[currentPreset, 14] = currentConfig[14];
             currentPreset = (int)Presets.Value;
 
             if (numPedals > 0)
             {
+                string text;
+                int amp = savedConfigs[currentPreset, 14];
                 alreadyUsed = true;
                 for (int i = 0; i < numPedals; i++)
                 {
                     pedalConfig.addPanel(pedalBoard.pedalInfos().ElementAt(savedConfigs[currentPreset, i] - 1).ElementAt(1), false, false);
                 }
+                if (amp == 1)
+                {
+                    text = "Clean";
+                }
+                else if (amp == 2)
+                {
+                    text = "Rhythm";
+                }
+                else
+                {
+                    text = "Lead";
+                }
+                ampSettings.Text = text;
             }
             else
             {
@@ -183,13 +238,6 @@ namespace Pedal_Switcher
             }
         }
     }
-
-    ////http://geekswithblogs.net/bosuch/archive/2012/06/12/cndashusing-a-delegate-to-raise-an-event-from-one-class.aspx
-    //public delegate void MyHandler1(object sender, MyEvent e);
-    //public class MyEvent : EventArgs
-    //{
-    //    public string message;
-    //}
 
     public class PedalList
     {

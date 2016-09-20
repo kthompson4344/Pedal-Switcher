@@ -1,0 +1,10 @@
+﻿TODO:
+-Second preset entry has a 3 for amp setting - when you go to a blank preset and back without
+ entering anything, it fills the amp setting with 3
+-Receive serial data
+-Have SD receive data in blocks
+-COM Port Selection (Like HVR Program)
+-Deal with incorrect COM port
+-Deal with bad text files
+-When you click a pedal you have already added, you can't add any more after that
+-Editing of presets
