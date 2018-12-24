@@ -1,0 +1,10 @@
+new pedal switcher ideas:
+	Board mount as much as possible: footswitches, jacks
+	Footswitches: TBD 
+	dual jacks (page 18-19) http://www.amphenolaudio.com/wp-content/uploads/2015/07/55010575000220_acjm-mhde.pdf
+	Isolation (optoisolators, digital isolators). Two jacks?
+	Lots of provisions for trying things (jumpers, etc, options for two jacks)
+	circuit that ramps volume down vs mute circuit
+	pop remover IC?
+	MIDI in and out
+	tuner
