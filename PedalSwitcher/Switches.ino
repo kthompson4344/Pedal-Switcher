@@ -64,16 +64,14 @@ void checkSwitches() {
         bank = 14;
       }
       if (mute) {
-        matrix.drawColon(true);
-        matrix.writeDigitRaw(3, 0);
-        matrix.writeDigitNum(4, 0);
+//        matrix.drawColon(true);
+//        matrix.writeDigitRaw(3, 0);
+//        matrix.writeDigitNum(4, 0);
       }
-      matrix.writeDigitRaw(0, letterB);
-      matrix.writeDigitNum(1, bank);
-      matrix.writeDisplay();
+//      matrix.writeDigitRaw(0, letterB);
+//      matrix.writeDigitNum(1, bank);
+//      matrix.writeDisplay();
 
     }
   }
 }
-
-

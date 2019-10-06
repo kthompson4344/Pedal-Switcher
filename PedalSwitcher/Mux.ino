@@ -40,7 +40,7 @@ void updatePedals() {
 
 //set LEDs and multiplexors
 void changePreset() {
-  //free play mode (consider deleting?)
+  //TODO free play mode (consider deleting?)
   if (!presetMode) {
 //    if (pedalOff) {
 //      strip.setPixelColor(presetLEDs[presetChanged - (7 * bank) - 1], strip.Color(0, 0, 0));
@@ -60,26 +60,26 @@ void changePreset() {
     //single LED on at a time for the selected preset
     if (presetsOff) {
       if (currentPreset != presetChanged) {
-        strip.setPixelColor(presetLEDs[currentPreset - (7 * (currentBank - 1)) - 1], strip.Color(0, 0, 0));
-        strip.setPixelColor(presetLEDs[presetChanged - (7 * (bank - 1)) - 1], strip.Color(pedalColors[presetChanged - 1][0], pedalColors[presetChanged - 1][1], pedalColors[presetChanged - 1][2]));
+//        strip.setPixelColor(presetLEDs[currentPreset - (7 * (currentBank - 1)) - 1], strip.Color(0, 0, 0));
+//        strip.setPixelColor(presetLEDs[presetChanged - (7 * (bank - 1)) - 1], strip.Color(pedalColors[presetChanged - 1][0], pedalColors[presetChanged - 1][1], pedalColors[presetChanged - 1][2]));
       }
       else {
-        strip.setPixelColor(presetLEDs[currentPreset - (7 * (bankChanged - 1)) - 1], strip.Color(0, 0, 0));
+//        strip.setPixelColor(presetLEDs[currentPreset - (7 * (bankChanged - 1)) - 1], strip.Color(0, 0, 0));
       }
     }
     else {
-      strip.setPixelColor(presetLEDs[presetChanged - (7 * (bank - 1)) - 1], strip.Color(pedalColors[presetChanged - 1][0], pedalColors[presetChanged - 1][1], pedalColors[presetChanged - 1][2]));
-      matrix.print(presetChanged, DEC);
-      matrix.writeDisplay();
+//      strip.setPixelColor(presetLEDs[presetChanged - (7 * (bank - 1)) - 1], strip.Color(pedalColors[presetChanged - 1][0], pedalColors[presetChanged - 1][1], pedalColors[presetChanged - 1][2]));
+//      matrix.print(presetChanged, DEC);
+//      matrix.writeDisplay();
     }
-    strip.show();
+//    strip.show();
     if (presetChanged == currentPreset && presetsOff) {
       Serial.println("YES");
       allOff();
       mute = true;
-      matrix.print(0x0FF, HEX);
-  matrix.writeDigitNum(1, 0);
-  matrix.writeDisplay();
+//      matrix.print(0x0FF, HEX);
+//  matrix.writeDigitNum(1, 0);
+//  matrix.writeDisplay();
     }
     else {
 //      allOff();
@@ -87,11 +87,11 @@ void changePreset() {
       delay(1000);
       setMux();
       mute = false;
-      matrix.print(presetChanged, DEC);
-      matrix.drawColon(true);
-      matrix.writeDigitRaw(0, letterB);
-      matrix.writeDigitNum(1, bank);
-      matrix.writeDisplay();
+//      matrix.print(presetChanged, DEC);
+//      matrix.drawColon(true);
+//      matrix.writeDigitRaw(0, letterB);
+//      matrix.writeDigitNum(1, bank);
+//      matrix.writeDisplay();
     }
     //      delay(100);
   }
@@ -100,4 +100,3 @@ void changePreset() {
   currentBank = bankChanged;
   presetChanged = 0;
 }
-

@@ -11,8 +11,6 @@ bool mute = true;
 //TODO this will be replaced with SD card
 //keep 0-14 for manual eval
 int presets[numPresets][numColumns] = {
-  //if in presets 1-14, pedals are able to be manually turned on in the order they are pressed
-	//last column is pedal color
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -26,8 +24,8 @@ int presets[numPresets][numColumns] = {
   {10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-  {13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-  {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 0},
+  {14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},//buffer
+  {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -61,5 +59,4 @@ int pedalColors[14][3] {
   {0x00, 0x55, 0x00},
 };
 
-int pedalDataValues[15] = {31, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29};
-
+int pedalDataValues[15] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29};
