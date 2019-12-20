@@ -28,10 +28,11 @@ void allOff() {
 }
 
 void setMux() {
+  //printPedals();
   /*
       bypass: shiftOut5(1), shiftOut5(0) 15x
   */
-  for (int i = 436; i > 0; i-=2) {
+  for (int i = unityGain; i > 0; i-=2) {
     analogWrite(vactrolV1, i);
     delayMicroseconds(100);
   }
@@ -39,19 +40,18 @@ void setMux() {
   //initialize shiftOut5 calls to 0
   int shiftVals[16] = {0};
   int _numPedals = 0;
+  numPedals = 0;
   //count number of pedals in setting
-  for (int i = 13; i >= 0; i--) {
+  for (int i = maxPedals-1; i >= 0; i--) {
     if (currentPedals[i] > 0) {
       _numPedals++;
+      numPedals++;
     }
   }
   //set necessary values in shiftVals array
   for (int i = _numPedals - 1; i >= 0; i--) {
-//      Serial.println("HERE1");
-//      //first slot is always OUT=31=pedalDataValues[0]
-//      shiftVals[currentPedals[_numPedals - 1]] = pedalDataValues[_numPedals];
-
-      int pedal = currentPedals[i];
+      //silkscreen numbering is backwards, the substraction corrects it
+      int pedal = maxPedals - currentPedals[i];
       int lastPedal = currentPedals[i - 1];
       //last pedal goes to 1 (input)
       if (i == 0) {
@@ -64,23 +64,24 @@ void setMux() {
   }
   //last slot is the data value of the last pedal
   //first slot is GND so disable
-  //shiftVals[0] = pedalDataValues[currentPedals[0]];
-  
   shiftVals[15] = 0;
-  shiftVals[0] = pedalDataValues[currentPedals[_numPedals-1]];
+  //put buffer value in last slot
+  shiftVals[0] = 29;
+  //put pedal in 2nd to last (buffer's) slot
+  shiftVals[1] = pedalDataValues[currentPedals[_numPedals-1]];
 
   //set shift registers
   digitalWrite(latchPin, 0);
+
   for (int i = 0; i <= 15; i++) {
     shiftOut5(shiftVals[i]);
-    Serial.println(shiftVals[i]);
   }
   digitalWrite(latchPin, 1);
-  for (int i = 0; i < 436; i+=2) {
+  for (int i = 0; i < unityGain; i+=2) {
     analogWrite(vactrolV1, i);
     delayMicroseconds(100);
   }
-  analogWrite(vactrolV1, 436);
+  analogWrite(vactrolV1, unityGain);
 }
 
 
