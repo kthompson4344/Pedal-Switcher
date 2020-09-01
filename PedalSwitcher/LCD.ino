@@ -39,7 +39,6 @@ void displayPedals() {
   int displayLength = 0;
   bool secondLine = false;
   for (int i = 0; i < maxPedals; i++) {
-
     if (currentPedals[i] > 0) {
       if (currentPedals[i] > 9) {
         displayLength += 2;
@@ -62,6 +61,12 @@ void displayPedals() {
       u8g2.print(currentPedals[i]);
       if (firstPedal) {
         firstPedal = false;
+      }
+    }
+    else {
+      if (i == 0) {
+        u8g2.setFont(u8g2_font_helvB10_tf);
+        u8g2.print("No Pedals");
       }
     }
   }

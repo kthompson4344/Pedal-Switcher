@@ -57,10 +57,6 @@ bool presetsOff = false;
 int numPedals = 0;
 int twoPresetsPrev = 0;
 
-//**********Relays************
-int tunerEnable = 31;
-int bufferBypass = 32;
-
 //**********Vactrols**********
 int vactrolV1 = 22;//input in series (should be 1k ohm for unity gain)
 int vactrolV1SWfix = 17;//needed because 17 is not a PWM pin is softwired to 22
@@ -113,6 +109,7 @@ void setup()
   pinMode(15, INPUT);
   LEDsOff();
   delay(100);
+  setLED(6, 0, 0, 50);
 
   //***************LCD Display*****************
   pinMode(backlightRed, OUTPUT);
@@ -141,9 +138,10 @@ void setup()
     while (1);
   }
   //  while(1);
-  //  dumpFile();
+//    dumpFile();
   //  delay(100);
   //  loadSinglePreset(2);
+  
   loadAllPresets();
 
   //***************Shift Registers*****************
@@ -151,13 +149,7 @@ void setup()
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
   delay(100);
-  allOff();
-
-  //**********Relays************
-  pinMode(tunerEnable , OUTPUT);
-  digitalWrite(tunerEnable, LOW);
-  pinMode(bufferBypass, OUTPUT);
-  digitalWrite(bufferBypass, LOW);//low is with input buffer
+//  allOff();
 
   //**********Vactrols**********
   pinMode(vactrolV1SWfix, INPUT);
@@ -165,22 +157,20 @@ void setup()
   pinMode(vactrolV2, OUTPUT);
   digitalWrite(vactrolV2, LOW);
   analogWriteResolution(12);
-  analogWriteFrequency(vactrolV1, 375000);//22
-  analogWrite(vactrolV1, unityGain);//unity gain 57
+  analogWriteFrequency(vactrolV1, 29296.875);//22
+  analogWrite(vactrolV1, unityGain);//
   delay(100);
 
   //**********MIDI***********
   kemper.begin();
   kemper.tunerOn();
-  //**********Tuner***********
-  //AudioMemory(30);
-  /*  Initialize the yin algorithm's absolute
-      threshold, this is good number.*/
-  //use tuner.disable() to stop, call this to start back up again
-  //tuner.begin(.15, fir_22059_HZ_coefficients, sizeof(fir_22059_HZ_coefficients), 2);
-  //  delay(1000);
-  //  dumpFile();
-      setMux();
+
+
+
+//    dumpFile();
+//      setMux();
+bypassOut();
+//bypassOutwGND();
 //      while(true) {
 //      for (int i = 0; i < 127; i++) {
 //      tunerLCD(notesNames[0], i, true);
@@ -192,6 +182,8 @@ void setup()
 
 void loop()
 {
+  static long previousMillis = 0;
+  static bool LEDState = false;
   checkSwitches();
   if (presetChanged > 0) {
     updatePedals();
@@ -202,6 +194,59 @@ void loop()
   if (longClick) {
     program = true;
     programPresets();
+  }
+  if (lastBank != bank || bankChanged) {
+    if (bankChanged) {
+      LEDState = false;
+      Serial.print("lastBank: "); Serial.println(lastBank);
+    Serial.print("bank: "); Serial.println(bank);
+    }
+    
+    if (millis() - previousMillis > 500 || bankChanged) {
+      LEDState = !LEDState;
+      bankChanged = false;
+      if (LEDState) {
+        if (bank == 1) {
+          setLED(6, 0, 0, 50);
+          setLED(7, 0, 0, 0);
+          setLED(8, 0, 0, 0);
+        }
+        else if (bank == 2) {
+          setLED(7, 0, 50, 0);
+          setLED(6, 0, 0, 0);
+          setLED(8, 0, 0, 0);
+        }
+        else if (bank == 3) {
+          setLED(8, 50, 0, 0);
+          setLED(6, 0, 0, 0);
+          setLED(7, 0, 0, 0);
+        }
+        if (lastBank == 1) {
+          setLED(6, 0, 0, 50);
+        }
+        else if (lastBank == 2) {
+          setLED(7, 0, 50, 0);
+        }
+        else if (lastBank == 3) {
+          setLED(8, 50, 0, 0);
+        }
+      }
+      else {
+        if (lastBank == 1) {
+          setLED(7, 0, 0, 0);
+          setLED(8, 0, 0, 0);
+        }
+        if (lastBank == 2) {
+          setLED(6, 0, 0, 0);
+          setLED(8, 0, 0, 0);
+        }
+        if (lastBank == 3) {
+          setLED(6, 0, 0, 0);
+          setLED(7, 0, 0, 0);
+        }
+      }
+      previousMillis = millis();
+    }
   }
 }
 
@@ -237,7 +282,7 @@ void testLEDs() {
 }
 
 void testSwitches() {
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < numPresetSwitches; i++) {
     if (digitalReadFast(presetSwitchesPin[i]) == LOW) {
       Serial.println(i);
     }

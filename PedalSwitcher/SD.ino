@@ -61,7 +61,7 @@ void loadAllPresets() {
       recNum++; // Count the record
 
       char inputCsvString[128];
-      char presetName[maxPresetName];
+      char presetName[maxPresetName + 1];
       char * partOfString; // this is used by strtok_r() as an index
       list.toCharArray(inputCsvString, 128);
       //      Serial.print("PresetNum: "); Serial.println(recNum);
@@ -73,7 +73,7 @@ void loadAllPresets() {
       for (int i = 0; i < maxPedals; i++) {
         partOfString = strtok (NULL, ","); // this continues where the previous call left off
         presets[recNum][i] = atoi(partOfString);     // convert this part to an integer
-        //        Serial.println(presets[recNum-1][i]);
+//        Serial.println(presets[recNum][i]);
       }
 
       //      Serial.println("LEDs");
@@ -87,7 +87,7 @@ void loadAllPresets() {
       //read and trim preset name string
       partOfString = strtok (NULL, ",");
       strcpy(presetNames[recNum], partOfString);
-      //      Serial.println(presetNames[recNum]);
+//      Serial.println(presetNames[recNum]);
 
 
 
@@ -121,9 +121,8 @@ void programPresets() {
   programBank = 50;
   int prevBank = bank;
   setMulticlickTime(250);
-  Serial.println("Program Mode");
   preset(currentBank, presetToProgramLocal, presetNames[presetToProgramLocal], true);
-  setLED(presetToProgramLocal - (7 * (bankToProgramLocal - 1)) - 1, pedalColors[presetToProgramLocal][0], pedalColors[presetToProgramLocal][1], pedalColors[presetToProgramLocal][2]);
+  setLED(presetToProgramLocal - (numPresetSwitches * (bankToProgramLocal - 1)) - 1, pedalColors[presetToProgramLocal][0], pedalColors[presetToProgramLocal][1], pedalColors[presetToProgramLocal][2]);
   while (program) {
     checkSwitches();
     if (longClick && presetToProgram == presetToProgramLocal) {
@@ -153,6 +152,7 @@ void programPresets() {
       //double click to turn that pedalx2 on/off
       //display current pedal order on screen
       if (presetChanged > 0) {
+        presetChanged -= ((bank-1) * 6);
         int _numPedals = 0;
         bool inPreset = false;
         //count number of pedals
@@ -185,9 +185,10 @@ void programPresets() {
         else {
           currentPedals[_numPedals] = presetChanged;
         }
+        allOff();
         printPedals();
         preset(currentBank, currentPreset, presetNames[currentPreset], true);
-        setMux();
+        muxOn();
         presetChanged = 0;
       }
     }
@@ -198,7 +199,7 @@ void programPresets() {
         firstTime = true;
       }
       //doubleClick
-      if (presetChanged == presetToProgramLocal + 6) {
+      if (presetChanged == presetToProgramLocal + numPresetSwitches) {
 
       }
       //presetName
@@ -218,8 +219,8 @@ void programPresets() {
         }
         if (firstTime) {
           char letter = presetNames[presetToProgramLocal][charPlace] + programBank - 50;
-                    Serial.println(int(letter));
-                    Serial.println(programBank);
+//                    Serial.println(int(letter));
+//                    Serial.println(programBank);
           if (int(letter) == 0) {
             letter = 65;
             presetNames[presetToProgramLocal][charPlace] = 65;
@@ -276,7 +277,7 @@ void programPresets() {
           }
         }
         if (firstTime) {
-          setLED(presetToProgramLocal - (7 * (bankToProgramLocal - 1)) - 1, colors[0], colors[1], colors[2]);
+          setLED(presetToProgramLocal - (numPresetSwitches * (bankToProgramLocal - 1)) - 1, colors[0], colors[1], colors[2]);
           //          setLCDLED(colors[0], colors[1], colors[2]);
           displayRGB(bankToProgramLocal, presetToProgramLocal, colors[0], colors[1], colors[2], LEDPlace);
           firstTime = false;
@@ -285,6 +286,10 @@ void programPresets() {
       }
       //save to SD
       else {
+        //save currentPedals to preset array
+        for (int i = 0; i < maxPedals; i++) {
+          presets[presetToProgramLocal][i] = currentPedals[i];
+        }
         SD.remove("presets.txt");
         // open the file. note that only one file can be open at a time,
         // so you have to close this one before opening another.
@@ -292,7 +297,7 @@ void programPresets() {
 
         // if the file opened okay, write to it:
         if (myFile) {
-          for (int presetToSave = 1; presetToSave <= totalPresets; presetToSave++) {
+          for (int presetToSave = 1; presetToSave <= numPresets; presetToSave++) {
             myFile.print(presetToSave);
             myFile.print(",");
             for (int i = 0; i < maxPedals; i++) {

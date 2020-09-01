@@ -44,19 +44,42 @@ void changePreset() {
 
   }
   else {
+    allOff();
+
     //single LED on at a time for the selected preset
     if (presetsOff) {
+      if (bank == 1) {
+          setLED(8, 0, 0, 0);
+          setLED(7, 0, 0, 0);
+          setLED(6, 0, 0, 50);
+        }
+        else if (bank == 2) {
+          setLED(6, 0, 0, 0);
+          setLED(8, 0, 0, 0);
+          setLED(7, 0, 50, 0);
+        }
+        else if (bank == 3) {
+          setLED(6, 0, 0, 0);
+          setLED(7, 0, 0, 0);
+          setLED(8, 50, 0, 0);
+        }
+        else {
+          setLED(6, 0, 0, 0);
+          setLED(7, 0, 0, 0);
+          setLED(8, 0, 0, 0);
+        }
+        lastBank = bank;
       if (currentPreset != presetChanged) {
         //turn on a preset and turn off another
-        setLED(currentPreset - (7 * (currentBank - 1)) - 1, 0, 0, 0);
-        setLED(presetChanged - (7 * (bank - 1)) - 1, pedalColors[presetChanged][0], pedalColors[presetChanged][1], pedalColors[presetChanged][2]);
+        setLED(currentPreset - (numPresetSwitches * (currentBank - 1)) - 1, 0, 0, 0);
+        setLED(presetChanged - (numPresetSwitches * (bank - 1)) - 1, pedalColors[presetChanged][0], pedalColors[presetChanged][1], pedalColors[presetChanged][2]);
       }
       else {
-        setLED(currentPreset - (7 * (bankChanged - 1)) - 1, 0, 0, 0);
+        setLED(currentPreset - (numPresetSwitches * (bankChanged - 1)) - 1, 0, 0, 0);
       }
     }
     else {
-      setLED(presetChanged - (7 * (bank - 1)) - 1, pedalColors[presetChanged][0], pedalColors[presetChanged][1], pedalColors[presetChanged][2]);
+      setLED(presetChanged - (numPresetSwitches * (bank - 1)) - 1, pedalColors[presetChanged][0], pedalColors[presetChanged][1], pedalColors[presetChanged][2]);
     }
     if (presetChanged == currentPreset && presetsOff) {
       //bypass
@@ -69,10 +92,16 @@ void changePreset() {
       //allOff();//? TODO
       //send MIDI PC message (set for Kemper performances right now, need to generalize in the future TODO)
       //send program change message on channel 1 (C0)
-      midiProg( 0xC0, MIDIPreset[presetChanged - 1] - 1);
-      //Serial.println(MIDIPreset[presetChanged] - 1);
-      //Serial.println(presetChanged);
-      setMux();
+      midiOutput1.sendProgramChange(MIDIPreset[presetChanged - 1] - 1, 1);
+      //midiProg( 0xC0, MIDIPreset[presetChanged - 1] - 1);
+      //if 6 is pressed turn morph on, if not turn it off
+      if (presetChanged % 6 == 0) {
+        midiOutput1.sendControlChange(11, 127, 1);
+      }
+      else {
+        midiOutput1.sendControlChange(11, 0, 1);
+      }
+      muxOn();
       mute = false;
     }
     //      delay(100);
