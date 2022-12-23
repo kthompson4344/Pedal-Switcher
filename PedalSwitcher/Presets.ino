@@ -95,7 +95,11 @@ void changePreset() {
       midiOutput1.sendProgramChange(MIDIPreset[presetChanged - 1] - 1, 1);
       //midiProg( 0xC0, MIDIPreset[presetChanged - 1] - 1);
       //if 6 is pressed turn morph on, if not turn it off
+      Serial.print("PresetChanged: ");
+      Serial.println(presetChanged);
       if (presetChanged % 6 == 0) {
+        delay(50);
+        Serial.println("MORPH ON");
         midiOutput1.sendControlChange(11, 127, 1);
       }
       else {

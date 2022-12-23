@@ -4,6 +4,9 @@ void tuner() {
   int interval1 = 10;
   int interval2 = 10;
   int i = 0;
+  //turn off morph
+  midiOutput1.sendControlChange(11, 0, 1);
+  delay(100);
   kemper.tunerOn();
   while (1) {
     checkSwitches();
